@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
@@ -12,6 +13,10 @@ df.drop(['Vol.', 'Change %'], axis=1, inplace=True)
 df['Date'] = pd.to_datetime(df['Date'])
 df.sort_values(by='Date', ascending=True, inplace=True)
 df.reset_index(drop=True, inplace=True)
+df['Date_year']=df['Date'].dt.year
+df['Date_month']=df['Date'].dt.month
+df['Date_day']=df['Date'].dt.day
+print(df.info())
 
 #
 columns=["Price","Open","High","Low"]
@@ -77,3 +82,5 @@ plt.xlabel('Actual count', fontsize=14)
 plt.ylabel('Prediced  count', fontsize=14)
 plt.title('Actual vs Predicted  count', fontsize=17)
 plt.show()
+
+print(r2_score(y_test,y_pred))
