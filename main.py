@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
@@ -28,12 +28,14 @@ for col in columns:
 print(df.isna().sum())
 
 #
+
 sns.boxplot(x=df["Open"])
 plt.show()
 sns.boxplot(x=df["High"])
 plt.show()
 sns.boxplot(x=df["Low"])
 plt.show()
+
 
 columns=["Open","High","Low"]
 plt.show()
@@ -57,9 +59,7 @@ y= df["Price"]
 print(x.head())
 print(y.head())
 
-# Create linear regression object
-reg = LinearRegression()
-reg.fit(x,y)
+
 
 X_train, X_test, y_train, y_test = train_test_split(x, y, random_state=1, test_size=0.30)
 print(X_train.shape)
@@ -83,4 +83,11 @@ plt.ylabel('Prediced  count', fontsize=14)
 plt.title('Actual vs Predicted  count', fontsize=17)
 plt.show()
 
+# calculate R2 using scikit-learn
 print(r2_score(y_test,y_pred))
+
+# calculate RMSE using scikit-learn
+print(np.sqrt(mean_squared_error(y_test,y_pred)))
+
+# calculate MSE using scikit-learn
+print(mean_squared_error(y_test,y_pred))
