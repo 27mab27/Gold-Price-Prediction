@@ -84,10 +84,10 @@ plt.title('Actual vs Predicted  count', fontsize=17)
 plt.show()
 
 # calculate R2 using scikit-learn
-print(r2_score(y_test,y_pred))
+print("R2: ",r2_score(y_test,y_pred))
 
 # calculate RMSE using scikit-learn
-print(np.sqrt(mean_squared_error(y_test,y_pred)))
+print("Mean Squared Error: ",np.sqrt(mean_squared_error(y_test,y_pred)))
 
 # calculate MSE using scikit-learn
-print(mean_squared_error(y_test,y_pred))
+print("Root Mean Squared Error: ",mean_squared_error(y_test,y_pred))
