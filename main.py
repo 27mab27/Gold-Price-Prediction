@@ -5,7 +5,7 @@ import seaborn as sns
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-
+from sklearn.ensemble import RandomForestRegressor
 df = pd.read_csv("Gold Price (2013-2023).csv")
 df.drop(['Vol.', 'Change %'], axis=1, inplace=True)
 
@@ -83,6 +83,7 @@ plt.ylabel('Prediced  count', fontsize=14)
 plt.title('Actual vs Predicted  count', fontsize=17)
 plt.show()
 
+
 # calculate R2 using scikit-learn
 print("R2: ",r2_score(y_test,y_pred))
 
@@ -91,3 +92,9 @@ print("Mean Squared Error: ",np.sqrt(mean_squared_error(y_test,y_pred)))
 
 # calculate MSE using scikit-learn
 print("Root Mean Squared Error: ",mean_squared_error(y_test,y_pred))
+
+rando = RandomForestRegressor()
+
+rando.fit(X_train,y_train)
+
+print(rando.score(X_test,y_test))
