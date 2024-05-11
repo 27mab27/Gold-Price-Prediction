@@ -84,6 +84,7 @@ plt.title('Actual vs Predicted  count', fontsize=17)
 plt.show()
 
 
+print(linreg.score(X_test,y_test))
 # calculate R2 using scikit-learn
 print("R2: ",r2_score(y_test,y_pred))
 
