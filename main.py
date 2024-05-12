@@ -6,8 +6,8 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+
 df = pd.read_csv("Gold Price (2013-2023).csv")
-df.drop(['Vol.', 'Change %'], axis=1, inplace=True)
 
 #
 df['Date'] = pd.to_datetime(df['Date'])
@@ -18,26 +18,44 @@ df['Date_month']=df['Date'].dt.month
 df['Date_day']=df['Date'].dt.day
 print(df.info())
 
+
 #
 columns=["Price","Open","High","Low"]
 for col in columns:
     df[col] = df[col].replace({",":""}, regex=True)
     df[col] = df[col].astype("float64")
 
-#
-print(df.isna().sum())
+
+# Replace 'K' with '000' (assuming 'K' stands for thousand)
+df['Vol.'] = df['Vol.'].str.replace("K", "000", regex=True)
+
+# Remove the '%' sign from 'Change %'
+df['Change %'] = df['Change %'].str.replace("%", "", regex=True)
+
+# Convert these columns to float64
+df['Vol.'] = df['Vol.'].astype("float64")
+df['Change %'] = df['Change %'].astype("float64")
 
 #
+print("number of null is: ",df.isna().sum())
+df = df.dropna(subset=['Vol.'])
+#
 
+"""""
 sns.boxplot(x=df["Open"])
 plt.show()
 sns.boxplot(x=df["High"])
 plt.show()
 sns.boxplot(x=df["Low"])
 plt.show()
+sns.boxplot(x=df["Change %"])
+plt.show()
+sns.boxplot(x=df['Vol.'])
+plt.show()
+"""
 
 
-columns=["Open","High","Low"]
+columns=["Open","High","Low",'Vol.',"Change %"]
 plt.show()
 for col in columns:
     Q1 = df[col].quantile(0.25)
@@ -49,9 +67,11 @@ for col in columns:
     df = df[(df[col] <= upper_bound) & (df[col] >= lower_bound)]
 
 
+""""
 fig = plt.figure(figsize=(10,6))
 plt.scatter(y=df["Price"],x=df["Date"],color='red', marker='+')
 plt.show()
+"""
 
 col = df.columns.drop(['Price','Date'])
 x=df[col]
@@ -84,7 +104,9 @@ plt.title('Actual vs Predicted  count', fontsize=17)
 plt.show()
 
 
-print(linreg.score(X_test,y_test))
+print("Linear Regression: ")
+print("------------------------------------------------ ")
+
 # calculate R2 using scikit-learn
 print("R2: ",r2_score(y_test,y_pred))
 
@@ -98,4 +120,16 @@ rando = RandomForestRegressor()
 
 rando.fit(X_train,y_train)
 
-print(rando.score(X_test,y_test))
+y_pred = rando.predict(X_test)
+
+print()
+print("Random Forest Regressor: ")
+print("------------------------------------------------ ")
+# calculate R2 using scikit-learn
+print("R2: ",r2_score(y_test,y_pred))
+
+# calculate RMSE using scikit-learn
+print("Mean Squared Error: ",np.sqrt(mean_squared_error(y_test,y_pred)))
+
+# calculate MSE using scikit-learn
+print("Root Mean Squared Error: ",mean_squared_error(y_test,y_pred))
