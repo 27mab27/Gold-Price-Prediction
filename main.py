@@ -3,9 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Ridge
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
+
 
 df = pd.read_csv("Gold Price (2013-2023).csv")
 
@@ -87,12 +89,28 @@ print(y_train.shape)
 print(X_test.shape)
 print(y_test.shape)
 
-# instantiate
-linreg = LinearRegression()
-# fit the model to the training data (learn the coefficients)
-linreg.fit(X_train, y_train)
 
-y_pred = linreg.predict(X_test)
+# Setting up the range of alpha values to test
+alpha_values = {'alpha': [0.001, 0.01, 0.1, 1, 10, 100, 1000]}
+
+# Initialize Ridge Regression
+ridge = Ridge()
+
+# Setup GridSearchCV
+grid = GridSearchCV(estimator=ridge, param_grid=alpha_values, scoring='neg_mean_squared_error', cv=5, verbose=1)
+grid.fit(X_train, y_train)
+
+print()
+# Finding the best parameters
+print("Best parameters found: ", grid.best_params_)
+print("Best cross-validation score (negative MSE): ", grid.best_score_)
+
+# Using the best parameters found by GridSearchCV
+ridge_best = grid.best_estimator_
+
+# Predicting with the best estimator
+y_pred = ridge_best.predict(X_test)
+
 fig = plt.figure(figsize=(10,6))
 
 sns.scatterplot(x=y_test, y=y_pred, alpha=0.6)
@@ -117,12 +135,26 @@ print("Mean Squared Error: ",np.sqrt(mean_squared_error(y_test,y_pred)))
 print("Root Mean Squared Error: ",mean_squared_error(y_test,y_pred))
 
 rando = RandomForestRegressor()
+param_grid = {
+    'n_estimators': [100, 200, 300],
+    'max_depth': [None, 10, 20, 30],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
+}
 
-rando.fit(X_train,y_train)
+# Setup the GridSearchCV
+grid_search = GridSearchCV(estimator=rando, param_grid=param_grid, cv=5, scoring='neg_mean_squared_error', verbose=0, n_jobs=-1)
+grid_search.fit(X_train, y_train)
 
-y_pred = rando.predict(X_test)
-
+# Best parameters and model
 print()
+print("Best parameters:", grid_search.best_params_)
+best_rf = grid_search.best_estimator_
+
+y_pred = best_rf.predict(X_test)
+
+
+
 print("Random Forest Regressor: ")
 print("------------------------------------------------ ")
 # calculate R2 using scikit-learn
